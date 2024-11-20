@@ -1,43 +1,59 @@
 import dotenv from "dotenv/config";
-import { REST, Routes, EmbedBuilder } from "discord.js";
+import { REST, Routes, EmbedBuilder, SlashCommandBuilder } from "discord.js";
 import { db } from "./database.js";
 import { tokenPrices } from "./priceTracker.js";
+import {
+  priceList,
+  setAlert,
+  connectWallet,
+  walletAddress,
+} from "./constants/command_name.js";
+import {
+  burnHistoryCommand,
+  priceChangeCommand,
+  checkBalanceCommand,
+} from "./priceChange/price_change_commands.js";
+
+const setAlertCommand = new SlashCommandBuilder()
+  .setName(setAlert)
+  .setDescription("Set Alert")
+  .addStringOption((option) =>
+    option.setName("token").setDescription("Enter the Token").setRequired(true)
+  )
+  .addNumberOption((option) =>
+    option.setName("price").setDescription("Enter the Price").setRequired(true)
+  )
+  .addStringOption((option) =>
+    option
+      .setName("direction")
+      .setDescription("choose direction")
+      .setRequired(true)
+      .addChoices(
+        { name: "Above", value: "above" },
+        { name: "Below", value: "below" }
+      )
+  );
+const priceListCommand = new SlashCommandBuilder()
+  .setName(priceList)
+  .setDescription("Price List");
+
+const connectWalletCommand = new SlashCommandBuilder()
+  .setName(connectWallet)
+  .setDescription("Connect Wallet")
+  .addStringOption((option) =>
+    option
+      .setName(walletAddress)
+      .setDescription("Enter the Wallet Address")
+      .setRequired(true)
+  );
 
 const commands = [
-  {
-    name: "connect-wallet",
-    description: "Integration with wallet providers",
-    options: [
-      {
-        name: "wallet_address",
-        type: 3,
-        description: "Solana wallet address",
-        required: true,
-      },
-    ],
-  },
-  {
-    name: "price-list-and-set-alert",
-    description: "select action",
-    options: [
-      {
-        name: "price-options",
-        type: 3,
-        description: "Solana wallet address",
-        choices: [
-          {
-            name: "price-list",
-            value: "price-list",
-          },
-          {
-            name: "set-alert",
-            value: "set-alert",
-          },
-        ],
-        required: true,
-      },
-    ],
-  },
+  connectWalletCommand,
+  setAlertCommand,
+  priceListCommand,
+  priceChangeCommand,
+  burnHistoryCommand,
+  checkBalanceCommand,
 ];
 
 const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
@@ -59,16 +75,7 @@ const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
   }
 })();
 
-async function handleSetAlert(message, args) {
-  if (args.length !== 4) {
-    await message.reply("Usage: /set-alert <token> <price> <above/below>");
-    return;
-  }
-
-  const token = args[1].toLowerCase();
-  const price = parseFloat(args[2]);
-  const direction = args[3].toLowerCase();
-
+async function handleSetAlert(message, token, price, direction) {
   if (!tokenPrices.has(token)) {
     await message.reply(
       "Invalid token. Available tokens: bitcoin, ethereum, solana, cardano"

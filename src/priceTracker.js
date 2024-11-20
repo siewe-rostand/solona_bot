@@ -25,7 +25,7 @@ function startPriceTracking() {
   updateTokenPrices();
 
   // Schedule regular updates
-  schedule.scheduleJob("*/1 * * * *", async () => {
+  schedule.scheduleJob("*/5 * * * *", async () => {
     await updateTokenPrices();
     await checkAlerts(tokenPrices);
   });
