@@ -9,6 +9,8 @@ const burnHistoryString = "burn-history";
 const checkBalanceString = "check-balance";
 const walletString = "wallet";
 const currencyOptionString = "currency";
+const disconnectWalletString = "disconnect-wallet";
+const walletInfoString = "wallet-info";
 
 export {
   priceList,
@@ -22,4 +24,6 @@ export {
   checkBalanceString,
   walletString,
   currencyOptionString,
+  disconnectWalletString,
+  walletInfoString,
 };

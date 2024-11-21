@@ -23,12 +23,12 @@ async function handlePriceChangeCommand(interaction) {
       .addFields(
         {
           name: "Current Price",
-          value: `$${priceData.price.toFixed(4)}`,
+          value: `$${priceData.price}`,
           inline: true,
         },
         {
           name: "24h Change",
-          value: `${priceData.priceChange24h.toFixed(2)}%`,
+          value: `${priceData.priceChange24h}%`,
           inline: true,
         }
       );

@@ -13,6 +13,7 @@ import {
   priceChangeCommand,
   checkBalanceCommand,
 } from "./priceChange/price_change_commands.js";
+import fetch from "node-fetch";
 
 const setAlertCommand = new SlashCommandBuilder()
   .setName(setAlert)
@@ -111,6 +112,11 @@ async function handleSetAlert(message, token, price, direction) {
 }
 
 async function handlePriceList(message) {
+  const url = "https://pro-api.coingecko.com/api/v3/simple/price";
+  const response = await fetch(url);
+  const data = await response.json();
+  // console.log("response :::", response);
+  console.log("data :::", data);
   const embed = new EmbedBuilder()
     .setTitle("Current Token Prices")
     .setColor("#0099ff")
